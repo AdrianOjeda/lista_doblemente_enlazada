@@ -17,12 +17,15 @@ Lista::Lista(Nodo* ptr, Nodo* ptrtail) {
 
 void Lista::insertarInicio(Alumno alumno) {
 	Nodo* temp = new Nodo(alumno, nullptr, nullptr);
-	if (!header) {
-		header = temp;
+	if (!header){
+		header= temp;
+		tail = temp;
 		cout << "Alumno ingresado con exito!" << endl;
 	}
 	else {
+		//header = temp;
 		temp->sig = header;
+		header->ant = temp;
 		header = temp;
 	}
 }
@@ -31,7 +34,7 @@ void Lista::mostrar() {
 	Nodo* aux = header;
 
 	if (header) {
-		while (aux != nullptr) {
+		while (aux != tail->sig) {
 			cout << "Nombre: " << aux->alumno.nombre << " | Edad: " << aux->alumno.edad << endl;
 			aux = aux->sig;
 		}
@@ -52,6 +55,7 @@ void Lista::eliminarTodo() {
 		delete temp;
 	}
 	header = nullptr;
+	tail = nullptr;
 	delete aux;
 	cout << "Lista eliminada con exito!" << endl;
 }
@@ -59,10 +63,14 @@ void Lista::eliminarTodo() {
 void Lista::insertarFinal(Alumno alumno) {
 	Nodo* temp = new Nodo(alumno, nullptr, nullptr);
 	Nodo* ultimo = header;
-	while (ultimo->sig != nullptr) {
+	while (ultimo != tail) {
 		ultimo = ultimo->sig;
 	}
-	ultimo->sig = temp;
+	temp->ant = tail;
+	tail->sig = temp;
+	tail = temp;
+	tail->sig = nullptr;
+	cout << "Alumno ingresado con exito!" << endl;
 
 }
 void Lista::eliminar(Alumno alumno) {
@@ -87,18 +95,26 @@ void Lista::eliminar(Alumno alumno) {
 		}
 		else if (aux == header) {
 			header = header->sig;
+			header->ant = nullptr;
 			delete aux;
 			cout << "Alumno eliminado con exito!" << endl;
 
 		}
 		else if (aux->sig == nullptr) {
-			auxAnterior->sig = nullptr;
+			tail = tail->ant;
+			tail->sig = nullptr;
+			//aux->ant->sig=nullptr;
+
+			//auxAnterior->sig = nullptr;
 			delete aux;
 			cout << "Alumno eliminado con exito!" << endl;
 
 		}
 		else {
-			auxAnterior->sig = aux->sig;
+
+			aux->ant->sig = aux->sig;
+			aux->sig->ant = aux->ant;
+			//auxAnterior->sig = aux->sig;
 			delete aux;
 			cout << "Alumno eliminado con exito!" << endl;
 		}
@@ -109,7 +125,7 @@ void Lista::eliminar(Alumno alumno) {
 bool Lista::vacia() {
 
 	if (header) {
-
+		cout << "hola" << endl;
 		return false;
 	}
 	else {
@@ -133,22 +149,26 @@ int Lista::tamanoLista() {
 void Lista::insertarPosicion(int posicion, Alumno alumno) {
 	int contador = 0;
 	Nodo* aux = header;
-	Nodo* auxAnterior = nullptr;
+	//Nodo* auxAnterior = nullptr;
 	Nodo* temp = new Nodo(alumno, nullptr, nullptr);
 	if (posicion == 1) {
-		temp = header;
-		temp->sig = aux;
+		temp->sig = header;
+		header->ant = temp;
+		header = temp;
+
 		cout << "Alumno ingresado con exito!" << endl;
 	}
 	else {
 		while (contador < posicion - 1) {
-			auxAnterior = aux;
+			
 			aux = aux->sig;
 			contador++;
 
 		}
-		auxAnterior->sig = temp;
 		temp->sig = aux;
+		temp->ant = aux->ant;
+		aux->ant->sig = temp;
+		aux->ant = temp;
 		cout << "Alumno ingresado con exito!" << endl;
 	}
 
@@ -172,17 +192,14 @@ int Lista::buscar(Alumno alumno) {
 	return contador;
 }
 void Lista::primerElemento() {
-	Nodo* aux = header;
-	cout << "Nombre: " << aux->alumno.nombre << " | edad: " << aux->alumno.edad << endl;
+	
+	cout << "Nombre: " << header->alumno.nombre << " | edad: " << header->alumno.edad << endl;
 
 }
 void Lista::ultimoElemento() {
-	Nodo* aux = header;
-	while (aux->sig != nullptr) {
-		aux = aux->sig;
-
-	}
-	cout << "Nombre: " << aux->alumno.nombre << " | edad: " << aux->alumno.edad << endl;
+	
+	cout << "Nombre: " << tail->alumno.nombre << " | edad: " << tail->alumno.edad << endl;
+	
 
 }
 void Lista::siguiente(Alumno alumno) {
